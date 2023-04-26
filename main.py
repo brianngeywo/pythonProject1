@@ -11,23 +11,33 @@ from ui.request_rental_form import RequestRental
 from ui.user_profile import UserProfile
 
 
-class tkinterApp(tk.Tk):
+class RealEstateApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        # Set window size and position
+        self.geometry("1080x720")
 
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand=True)
+        # Create a canvas with a scrollbar
+        canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0)
+        scrollbar = tk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas)
 
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Add the scrollbar and the canvas
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True)
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
         self.frames = {}
 
         for F in (Homepage, AddRentalListing, RentalDetails, UserProfile, RentalListings, ListOfAvailableAgents, RequestRental, AgentHomepage, PendingRequests):
-            frame = F(container, self)
+            frame = F(scrollable_frame, self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky="nsew")
-        print(self.frames)
+
         self.show_frame("Homepage")
 
     def show_frame(self, cont):
@@ -38,5 +48,5 @@ class tkinterApp(tk.Tk):
             print(f"Error: {cont} does not exist in frames dictionary.")
 
 
-app = tkinterApp()
+app = RealEstateApp()
 app.mainloop()

@@ -11,10 +11,10 @@ class AddRentalListing(tk.Frame):
         #navigation
         button1 = ttk.Button(self, text="Home",
                              command=lambda: controller.show_frame("Homepage"))
-        button1.grid(row=0, column=1, padx=10, pady=10)
+        button1.grid(row=0, column=1, padx=5, pady=5)
         button2 = ttk.Button(self, text="Rental Listings",
                              command=lambda: controller.show_frame("RentalListings"))
-        button2.grid(row=0, column=2, padx=10, pady=10)
+        button2.grid(row=0, column=2, padx=5, pady=5)
         button3 = ttk.Button(self, text="Request new listing",
                              command=lambda: controller.show_frame("RequestRental"))
         button3.grid(row=0, column=3, padx=10, pady=10)

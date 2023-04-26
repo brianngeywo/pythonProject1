@@ -1,14 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-
-from const import bedrooms, locations
+from const import LARGEFONT, bedrooms, locations
 
 
 class RequestRental(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        # navigation
+
+        #navigation
         button1 = ttk.Button(self, text="Home",
                              command=lambda: controller.show_frame("Homepage"))
         button1.grid(row=0, column=1, padx=10, pady=10)
@@ -25,33 +25,12 @@ class RequestRental(tk.Frame):
                              command=lambda: controller.show_frame("UserProfile"))
         button5.grid(row=0, column=5, padx=10, pady=10)
 
-        #
-        # button1 = ttk.Button(self, text="Homepage",
-        #                      command=lambda: controller.show_frame("Homepage"))
-        # button1.grid(row=1, column=1, padx=10, pady=10)
-        #
-        # button2 = ttk.Button(self, text="Available agents",
-        #                      command=lambda: controller.show_frame("ListOfAvailableAgents"))
-        # button2.grid(row=2, column=1, padx=10, pady=10)
-
+        # Left side - Current listed properties
+        label = ttk.Label(self, text="Request Rental Listing", font=LARGEFONT)
+        label.grid(row=1, column=1, columnspan=2, padx=10, pady=10)
         self.selected_location = tk.StringVar(value="Kapsabet")
         self.selected_bedroom = tk.StringVar(value="1")
 
-        button1 = ttk.Button(self, text="Home",
-                             command=lambda: controller.show_frame("Homepage"))
-        button1.grid(row=0, column=1, padx=10, pady=10)
-        button2 = ttk.Button(self, text="Rental Listings",
-                             command=lambda: controller.show_frame("Homepage"))
-        button2.grid(row=0, column=2, padx=10, pady=10)
-        button3 = ttk.Button(self, text="Request new listing",
-                             command=lambda: controller.show_frame("Homepage"))
-        button3.grid(row=0, column=3, padx=10, pady=10)
-        button4 = ttk.Button(self, text="Available agents",
-                             command=lambda: controller.show_frame("Homepage"))
-        button4.grid(row=0, column=4, padx=10, pady=10)
-        button5 = ttk.Button(self, text="Account",
-                             command=lambda: controller.show_frame("Homepage"))
-        button5.grid(row=0, column=5, padx=10, pady=10)
         # Right side - Form to upload new rental
 
         # Create labels and entry fields for each input
@@ -102,10 +81,11 @@ class RequestRental(tk.Frame):
 
     def submit(self):
         # Retrieve the input from the entry fields
-        # property_type = self.property_type_entry.get()
-        num_bedrooms = self.selected_bedroom.get()
+        property_type = self.property_type_entry.get()
+        num_bedrooms = self.num_bedrooms_entry.get()
+        num_bathrooms = self.num_bathrooms_entry.get()
         rental_price = self.rental_price_entry.get()
-        location = self.selected_location.get()
+        location = self.location_entry.get()
         description = self.description_entry.get()
 
         # Do any necessary validation of the input here
@@ -114,7 +94,7 @@ class RequestRental(tk.Frame):
         # (This is just a placeholder; replace with your own code)
         with open("rentals.txt", "a") as f:
             f.write(
-                f"{num_bedrooms}, {num_bedrooms}, {rental_price}, {location}, {description}\n")
+                f"{property_type}, {num_bedrooms}, {num_bathrooms}, {rental_price}, {location}, {description}\n")
 
         # Display a success message to the user
         messagebox.showinfo("Success", "Rental listing added!")
