@@ -1,21 +1,21 @@
 import tkinter as tk
 
 from ui.agent_home_page import AgentHomepage
+from ui.main_homepage import MainHomepage
 from ui.pending_requests import PendingRequests
-from ui.user_home_page import Homepage
+from ui.signup import SignupPage
+from ui.user_home_page import UserHomepage
 from ui.add_rental_listing import AddRentalListing
 from ui.list_of_available_agents import ListOfAvailableAgents
-from ui.rental_details import RentalDetails
 from ui.rental_listings import RentalListings
 from ui.request_rental_form import RequestRental
-from ui.user_profile import UserProfile
-
+from ui.login import LoginPage
 
 class RealEstateApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         # Set window size and position
-        self.geometry("1080x720")
+        self.geometry("800x600")
 
         # Create a canvas with a scrollbar
         canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0)
@@ -33,12 +33,12 @@ class RealEstateApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (Homepage, AddRentalListing, RentalDetails, UserProfile, RentalListings, ListOfAvailableAgents, RequestRental, AgentHomepage, PendingRequests):
+        for F in (MainHomepage, LoginPage, SignupPage, UserHomepage, AddRentalListing, RentalListings, ListOfAvailableAgents, RequestRental, AgentHomepage, PendingRequests):
             frame = F(scrollable_frame, self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame("Homepage")
+        self.show_frame("MainHomepage")
 
     def show_frame(self, cont):
         if cont in self.frames:

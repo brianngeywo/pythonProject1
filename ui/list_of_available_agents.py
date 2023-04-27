@@ -9,7 +9,7 @@ class ListOfAvailableAgents(tk.Frame):
         tk.Frame.__init__(self, parent)
         # navigation
         button1 = ttk.Button(self, text="Home",
-                             command=lambda: controller.show_frame("Homepage"))
+                             command=lambda: controller.show_frame("UserHomepage"))
         button1.grid(row=0, column=1, padx=10, pady=10)
         button2 = ttk.Button(self, text="Rental Listings",
                              command=lambda: controller.show_frame("RentalListings"))
@@ -17,12 +17,9 @@ class ListOfAvailableAgents(tk.Frame):
         button3 = ttk.Button(self, text="Request new listing",
                              command=lambda: controller.show_frame("RequestRental"))
         button3.grid(row=0, column=3, padx=10, pady=10)
-        button4 = ttk.Button(self, text="Available agents",
-                             command=lambda: controller.show_frame("ListOfAvailableAgents"))
+        button4 = ttk.Button(self, text="Switch Account",
+                             command=lambda: controller.show_frame("UserHomepage"))
         button4.grid(row=0, column=4, padx=10, pady=10)
-        button5 = ttk.Button(self, text="Account",
-                             command=lambda: controller.show_frame("UserProfile"))
-        button5.grid(row=0, column=5, padx=10, pady=10)
 
         main_label = ttk.Label(self, text="List of available agents", font=LARGEFONT)
         main_label.grid(row=1, column=4, padx=10, pady=10)

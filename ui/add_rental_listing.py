@@ -1,3 +1,4 @@
+import pymysql.cursors
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -10,20 +11,17 @@ class AddRentalListing(tk.Frame):
 
         #navigation
         button1 = ttk.Button(self, text="Home",
-                             command=lambda: controller.show_frame("Homepage"))
+                             command=lambda: controller.show_frame("AgentHomepage"))
         button1.grid(row=0, column=1, padx=5, pady=5)
         button2 = ttk.Button(self, text="Rental Listings",
                              command=lambda: controller.show_frame("RentalListings"))
         button2.grid(row=0, column=2, padx=5, pady=5)
-        button3 = ttk.Button(self, text="Request new listing",
-                             command=lambda: controller.show_frame("RequestRental"))
-        button3.grid(row=0, column=3, padx=10, pady=10)
-        button4 = ttk.Button(self, text="Available agents",
-                             command=lambda: controller.show_frame("ListOfAvailableAgents"))
+        button3 = ttk.Button(self, text="Requests",
+                             command=lambda: controller.show_frame("PendingRequests"))
+        button3.grid(row=0, column=3, padx=5, pady=5)
+        button4 = ttk.Button(self, text="Switch Account",
+                             command=lambda: controller.show_frame("UserHomepage"))
         button4.grid(row=0, column=4, padx=10, pady=10)
-        button5 = ttk.Button(self, text="Account",
-                             command=lambda: controller.show_frame("UserProfile"))
-        button5.grid(row=0, column=5, padx=10, pady=10)
 
         # Left side - Current listed properties
         label = ttk.Label(self, text="Add Rental Listing", font=LARGEFONT)
@@ -80,26 +78,48 @@ class AddRentalListing(tk.Frame):
         self.controller = controller
 
     def submit(self):
+            # DB credentials
+        host = "localhost"
+        user = "root"
+        password = "admin"
+        db_name = "pythonproject1"
+
+        # Connect to the database
+        connection = pymysql.connect(host=host,
+                                     user=user,
+                                     password=password,
+                                     db=db_name,
+                                     cursorclass=pymysql.cursors.DictCursor)
+
+        # Create a cursor object to execute SQL queries
+        cursor = connection.cursor()
+
         # Retrieve the input from the entry fields
-        property_type = self.property_type_entry.get()
-        num_bedrooms = self.num_bedrooms_entry.get()
-        num_bathrooms = self.num_bathrooms_entry.get()
+        num_bedrooms = self.selected_bedroom.get()
         rental_price = self.rental_price_entry.get()
-        location = self.location_entry.get()
+        location = self.selected_location.get()
         description = self.description_entry.get()
 
-        # Do any necessary validation of the input here
+        # Use the INSERT INTO statement to insert the values into the rental table in the database
+        sql = "INSERT INTO rental (num_bedrooms, rental_price, location, description) VALUES (%s, %s, %s, %s)"
+        val = (num_bedrooms, rental_price, location, description)
+        cursor.execute(sql, val)
 
-        # Save the input to a database or file
-        # (This is just a placeholder; replace with your own code)
-        with open("rentals.txt", "a") as f:
-            f.write(
-                f"{property_type}, {num_bedrooms}, {num_bathrooms}, {rental_price}, {location}, {description}\n")
+        # Commit changes to the database
+        connection.commit()
 
         # Display a success message to the user
         messagebox.showinfo("Success", "Rental listing added!")
 
         # Clear the entry fields
+        self.selected_bedroom.set(0, 'end')
+        self.selected_location.set("Eldoret", 'end')
+        self.rental_price_entry.delete(0, 'end')
+        self.description_entry.delete(0, 'end')
+
+        # Close the cursor and connection objects
+        cursor.close()
+        connection.close()
 
 
 

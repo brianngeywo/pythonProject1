@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+
+import pymysql
+
 from const import LARGEFONT, bedrooms, locations
 
 
@@ -10,20 +13,17 @@ class RequestRental(tk.Frame):
 
         #navigation
         button1 = ttk.Button(self, text="Home",
-                             command=lambda: controller.show_frame("Homepage"))
+                             command=lambda: controller.show_frame("UserHomepage"))
         button1.grid(row=0, column=1, padx=10, pady=10)
         button2 = ttk.Button(self, text="Rental Listings",
                              command=lambda: controller.show_frame("RentalListings"))
         button2.grid(row=0, column=2, padx=10, pady=10)
-        button3 = ttk.Button(self, text="Request new listing",
-                             command=lambda: controller.show_frame("RequestRental"))
-        button3.grid(row=0, column=3, padx=10, pady=10)
-        button4 = ttk.Button(self, text="Available agents",
+        button3 = ttk.Button(self, text="Available agents",
                              command=lambda: controller.show_frame("ListOfAvailableAgents"))
+        button3.grid(row=0, column=3, padx=10, pady=10)
+        button4 = ttk.Button(self, text="Switch Account",
+                             command=lambda: controller.show_frame("AgentHomepage"))
         button4.grid(row=0, column=4, padx=10, pady=10)
-        button5 = ttk.Button(self, text="Account",
-                             command=lambda: controller.show_frame("UserProfile"))
-        button5.grid(row=0, column=5, padx=10, pady=10)
 
         # Left side - Current listed properties
         label = ttk.Label(self, text="Request Rental Listing", font=LARGEFONT)
@@ -34,8 +34,8 @@ class RequestRental(tk.Frame):
         # Right side - Form to upload new rental
 
         # Create labels and entry fields for each input
-        # property_type_label = tk.Label(self, text="Property Type:")
-        # self.property_type_entry = tk.Entry(self)
+        phone_label = tk.Label(self, text="Phone:")
+        self.phone_entry = tk.Entry(self)
 
         num_bedrooms_label = tk.Label(self, text="Number of Bedrooms:")
         bedrooms_dropdown = ttk.OptionMenu(self, self.selected_bedroom, *bedrooms)
@@ -56,8 +56,8 @@ class RequestRental(tk.Frame):
         submit_button = tk.Button(self, text="Submit", command=self.submit)
 
         # Use grid layout to arrange the labels and entry fields
-        # property_type_label.grid(row=2, column=1, padx=5, pady=5)
-        # self.property_type_entry.grid(row=2, column=2, padx=5, pady=5)
+        phone_label.grid(row=2, column=1, padx=5, pady=5)
+        self.phone_entry.grid(row=2, column=2, padx=5, pady=5)
 
         num_bedrooms_label.grid(row=3, column=1, padx=5, pady=5)
         bedrooms_dropdown.grid(row=3, column=2, padx=5, pady=5)
@@ -81,22 +81,45 @@ class RequestRental(tk.Frame):
 
     def submit(self):
         # Retrieve the input from the entry fields
-        property_type = self.property_type_entry.get()
-        num_bedrooms = self.num_bedrooms_entry.get()
-        num_bathrooms = self.num_bathrooms_entry.get()
+        phone = self.phone_entry.get()
+        num_bedrooms = self.selected_bedroom.get()
         rental_price = self.rental_price_entry.get()
-        location = self.location_entry.get()
+        location = self.selected_location.get()
         description = self.description_entry.get()
 
-        # Do any necessary validation of the input here
+        # Connect to the database
+        connection = pymysql.connect(
+            host='localhost',
+            user='root',
+            password='admin',
+            db='pythonproject1'
+        )
 
-        # Save the input to a database or file
-        # (This is just a placeholder; replace with your own code)
-        with open("rentals.txt", "a") as f:
-            f.write(
-                f"{property_type}, {num_bedrooms}, {num_bathrooms}, {rental_price}, {location}, {description}\n")
+        try:
+            # Create a cursor object to execute SQL queries
+            with connection.cursor() as cursor:
+                # Construct the SQL query
+                sql = (
+                    "INSERT INTO requests (phone, num_bedrooms, rental_price, location, description) "
+                    "VALUES (%s, %s, %s, %s, %s)"
+                )
+                # Execute the query with the input data
+                cursor.execute(sql, (phone, num_bedrooms, rental_price, location, description))
+            # Commit the changes to the database
+            connection.commit()
+        except:
+            # Roll back the changes if an error occurs
+            connection.rollback()
+        finally:
+            # Close the database connection
+            connection.close()
 
         # Display a success message to the user
-        messagebox.showinfo("Success", "Rental listing added!")
+        messagebox.showinfo("Success", "Rental listing request sent!")
 
         # Clear the entry fields
+        self.phone_entry.delete(0, tk.END)
+        self.selected_bedroom.set("1")
+        self.rental_price_entry.delete(0, tk.END)
+        self.selected_location.set("Kapsabet")
+        self.description_entry.delete(0, tk.END)
